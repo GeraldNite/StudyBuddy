@@ -34,3 +34,5 @@ model Product {
   name  String
   price Int
 }
+
+// git commit -am 'message'
