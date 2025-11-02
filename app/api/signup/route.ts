@@ -11,7 +11,7 @@ const signUpSchema = z.object({
         "ADMIN",
         "MODERATOR"]),
 })
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
     try {

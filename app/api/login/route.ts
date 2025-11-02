@@ -1,14 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { prisma } from '@/app/api/signup/route';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { prisma } from '@/app/api/signup/route';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 // Zod schema for login
 const loginSchema = z.object({
     email: z.email('Invalid email'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
 });
+
+interface User {
+    id: number;
+    name?: string;
+    email: string;
+    password: string;
+    role: string;
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
@@ -20,7 +28,7 @@ export async function POST(request: NextRequest) {
         const { email, password } = loginSchema.parse(body);
 
         // Find user
-        const user = await prisma.user.findUnique({
+        const user: User|null = await prisma.user.findUnique({
             where: { email },
         });
 
@@ -48,7 +56,7 @@ export async function POST(request: NextRequest) {
         const token = jwt.sign(
             { userId: user.id, email: user.email },
             JWT_SECRET,
-            { expiresIn: '1d' }
+            { expiresIn: '1h' }
         );
 
         // const token = jwt.sign(
@@ -61,8 +69,8 @@ export async function POST(request: NextRequest) {
             {
                 message: 'Login successful',
                 token,
-                user: {
-                    id: user.id,
+                ...{
+                    role: user.role,
                     email: user.email,
                     name: user.name,
                 },

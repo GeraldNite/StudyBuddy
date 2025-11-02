@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Post {
@@ -24,10 +24,9 @@ model Comment {
 model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
+  name     String
   password String
-  role     String @default("user") // "admin" | "user"
-  createdAt DateTime @default(now())
-  updateAt  DateTime @default(now()) 
+  role     String @default("user")
 }
 
 model Product {
